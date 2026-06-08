@@ -1,0 +1,189 @@
+import os,csv,json,sys
+from tkinter import messagebox
+import customkinter as ctk
+from PIL import image
+
+# creating all the class
+class Content:
+    #this is the base class
+    def __init__(self,title,genre,rating,image_filename):
+        self.title,self.genre,self.rating,self.image_filename=title,genre,rating,image_filename
+
+class Profile:
+    #individual user has profile under an account
+    def __init__(self,name,age_group):
+        self.name,self.age_group=name,age_group
+        self.watchlist,self.watch_history=[],[]
+    def to_dict(self):
+        return {"name":self.name,"age_group":self.age_group,"watchlist":self.watchlist,"watch_history":self.watch_history}
+    
+class Movie(Content):
+    #movie is a subclass of content
+    def __init__(self,title,genre,rating,image_filename,duration):
+        super().__init__(title,genre,rating,image_filename)
+        self.duration=duration
+    def play(self,profile):
+        if self.title not in profile.watch_history:
+            profile.watch_history.append(self.title)
+        return f"Streaming Movie: {self.tite} ({self.duration})\nEnjoy ur movie!"
+    
+class Account:
+    #bruh composition and encapsultion
+    #this class has a profile
+    #and the password is kept as an private attribute
+    def __init__(self,name,email,password,subscription_plan,payment_info):
+        self.name,self.email,self.subscription_plan=name,email,subscription_plan
+        self.__password,self.__payment_info=password,payment_info
+        self.profiles=[Profile(name,"Adult"),Profile("Kids Zone","Kids")]
+    def check_password(self,pw):
+        return self.__password==pw
+
+CSV_FILE="accounts.csv"
+def load_accounts():
+    if not os.pasth.exists(CSV_FILE):
+        messagebox.showerror("Critical Error", f"Cannot find '{CSV_FILE}'.") #customkinkter
+        sys.exit()
+    accounts={} #storing all the accounts in a map
+    with open(CSV_FILE,encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            acc=Account(row["name"],row["email"],row["password"],row["subscription_plan"],row["payment_info"])
+            for saved,profile in zip(json.loads(row["profiles"]),acc.profiles):
+                profile.watchlist=saved["watchlist"]
+                profile.watch_history=saved["watch_history"]
+            accounts[acc.email]=acc
+    return accounts
+
+def save_accounts(accounts):
+    #saves any changes in the watch history
+    with open(CSV_FILE,'w',newline='',encoding='utf-8') as f:
+        w=csv.writer(f)
+        w.writerow(["name","email","password","subscription_plan","payment_info","profiles"])
+        for acc in accounts.values():
+            w.writerow([acc.name,acc.email,acc._Account__password,acc.subscription_plan,acc._Account__payment_info,json.dumps([p.to_dict() for p in acc.profiles])])
+            
+
+class OrzFlixApp(ctk.CTk):
+    #numeric rank for each rating so we can compare them 
+    RATINGS={"G":1,"PG":2,"M":3,"MA15+":4}
+    
+    #static library shared accross all profiles
+    LIBRARY=[
+        Movie("THE Avengers","Action","PG","averger.jpg","2h 23m"),
+        Movie("Farewell my Concubine","Drama","MA15+","farewell.jpg","2h 51m"),
+        Movie("Jaws","Thriller","M","jaw.webp","2h 4m"),
+        Movie("The Sun Also Rises","Drama","MA15+","sun_rises.jpg","2h 10m"),
+        Movie("Your Name","Animation","PG","your_name.jpg","1 46m"),
+    ]
+    
+    #initialization
+    def __init__(self):
+        super().__init__()
+        self.title("OrzFlix Streaming Service")
+        self.geometry("900x700")
+        
+        #hide the window while loading any startup
+        self.withdraw()
+        self.accounts=load_accounts()
+        self.current_accounts=self.current_profile=None
+        
+        #reveal the window once data is safely load
+        self.deiconify()
+        
+        #single root container, i want all the screens rendered in this frame
+        self.container=ctk.CTk.Frame(self)
+        self.container.pack(fill="both",expand=True)
+        self.show_login_screen()
+    
+    def clear(self):
+        #destory all widge in the container, ready for the next screen
+        for w in self.container.winfo_children():
+            w.destory()
+    
+    #login screen
+    def show_login_screen(self):
+        #first feature, entry point show the login form
+        self.clear()
+        self.current_accounts=self.current_profile=None
+        ctk.CTkLabel(self.container,text="Welcome to OrzFliz", font=("Helvetica",28,"bold")).pack(pady=40)
+        
+        frame=ctk.CTkFrame(self.container)
+        frame.pack(pady=20,padx=50)
+        ctk.CTkLabel(frame,text="Email Address:").pack(pady=5)
+        email=ctk.CTkEntry(frame,width=300,placeholder_text="Enter Email")
+        email.pack(pady=5)
+        ctk.CTkLabel(frame,text="Password:").pack(pady=5)
+        pw=ctk.CTkEntry(frame,width=300,show="*",placeholder_text="Enter password")
+        pw.pack(pady=5)
+        
+        def login():
+            e=email.get().strip()
+            #check_password is a private attribute
+            if e in self.account and self.account[e].check_password(pw.get()):
+                self.current_account=self.accounts[e]
+                self.show_profile_selection()
+            else:
+                messagebox.showerror("Login Error","Invalid email or password.")
+        
+        ctk.CTkButton(frame,text="Sign in Securely", command=login).pack(pady=20)
+    
+    #profile page
+    def show_profile_selection(self):
+        #second feature let the user pick which profile to watch under, adult or child
+        self.clear()
+        ctk.CTkLabel(self.container,text="Who is watching Today?",font=("Helvetica",24,"bold")).pack(pady=30)
+        frame=ctk.CTkFrame(self.container,fg_color="transparent")
+        frame.pack(pady=20)
+        
+        #two options
+        for p in self.current_account.profiles:
+            ctk.CTkButton(frame,text=f"\n\n{p.name}\n({p.age_group})",width=160,height=160,font=("Helvetica",14),
+                          command=lambda prof=p: self._select_profile(prof)).pack(side="left",padx=20)
+        ctk.CTkButton(self.container,text="Log Out",fg_color="red",command=self.show_login_screen).pack(pady=40)
+    
+    def _select_profile(self,profile):
+        #store the chosen profile and advance to the main page
+        self.current_profile=profile
+        self.show_dashboard()
+    
+    #DashBoard
+    def show_dashboard(self):
+        #main navigation hub
+        #it has three navigation bar and three feature tabs
+        self.clear()
+        
+        #top navigation bar
+        nav=ctk.CTkFrame(self.container,height=50,fg_color="#1f2326")
+        nav.pack(fill="x")
+        ctk.CTkLabel(nav,text=" OrzFlix",font=("Helvetica",18,"bold"),text_color="#3b8ed0").pack(side="left",padx=20,pady=10)
+        ctk.CTkLabel(nav,text=f"Active:{self.current_profile.name}",font=("Helvetica,12")),pack(side="left",padx=20)
+        ctk.CTkButton(nav,text="Switch Profile",width=100,command=self.show_profile_selection).pack(side="right",padx=10,pady=10)
+        
+        #tab view housing all three main features
+        self.tabs=ctk.CTkTabview(self.container)
+        self.tabs.pack(fill="both",expand=True,padx=10,pady=10)
+        for tab in ("Browse Library", "My Watchlist", "Manage Account"):
+            self.tabs.add(tab)
+        
+        #redner all tab contents upfront so switching tabs
+        self._render_browse()
+        self._render_watchlist()
+        self._render_account()
+
+    #content row helper
+    
+    
+    #browse
+    
+    
+    #play
+    
+    
+    #watchlist
+    
+    
+    #account
+    
+    
+    
+if __name__=="__main__":
+    OrzFlixApp().mainloop()
