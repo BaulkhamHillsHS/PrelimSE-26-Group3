@@ -170,7 +170,38 @@ class OrzFlixApp(ctk.CTk):
         self._render_account()
 
     #content row helper
-    
+    def _content_row(self, parent, item):
+        """Reusable helper which builds one content row(poster and info and buttons)."""
+        row = ctk.CTkFrame(parent)
+        row.pack(fill="x", pady=5, padx=5)
+
+        #attempt to load movie poster thumbnail from the images folder
+        img_path = os.path.join("images", item.image_filename)
+        if os.path.exists(img_path):
+            try:
+                img = ctk.CTkImage(Image.open(img_path), size=(60, 90))
+                ctk.CTkLabel(row, image=img, text="").pack(side="left", padx=10, pady=5)
+            except Exception:
+                ctl.CTkLabel(row, text="[IMG ERROR]", width=60).pack(side="left", padx=10)
+        else:
+            ctk.CTkLabel(row, text="[No Poster]", width=60).pack(side="left", padx=10)
+
+        #title, rating, genre, and duration of text block
+        ctk.CtkLabel(row, justify="left, font=("Helvetica", 14, "bold),
+                     text=f"{item.title} [{item.rating}] - {item.genre}\n(Movie - {item.duration})"
+                     ).pack(side="left", padx=10)
+
+        #play button: calls play() that takes on different forms which also logs to watch history
+        ctk.CTkButton(row, text="Play", width=70, 
+                      command=lambda c=item: self._play(c)).pack(side="right", padx=10)
+        
+        #watchlist button:  label, colour and action flip based on current state
+        in_wl = item.title in self.current_profile.watchlist
+        action = "remove" if in_wl else "add"
+        kw = {"fg_colour": "grey"} if in_wl else {} #only override colour when already saved
+        ctk.CTkButton(row, text="Remove Watchlist" if in_wl else "+ Watchlist", width=120,
+                      command=lambda c=item, a=action: self._toggle_watchlist(c, a),
+                      **kw).pack(side="right", padx=5)
     
     #browse
     
