@@ -204,11 +204,53 @@ class OrzFlixApp(ctk.CTk):
                       **kw).pack(side="right", padx=5)
     
     #browse
-    
-    
+    def _render_browse(self):
+        """Feature 3: this renders the full library with genre and the age ratings"""
+        tab = self.tabs.tab("Browse Library")
+        for w in tab.winfo_children():
+            w.destroy()
+
+        #filters bar
+        sf = ctk.CTkFrame(tab)
+        sf.pack(fill="x", padx=10, pady=10)
+        ctk.CTkLabel(sf, text = "Genre:").pack(side="left", padx=5)
+        genre_var = ctk.StringVar(value="All")
+        ctk.CTkOptionMenu(sf, values=["All", "Action", "Drama", "Thriller", "Animation"],
+                          variable=genre_var).pack(side="left", padx=5)
+        ctk.CTkLabel(sf, text="Max Rating: ").pack(side="left", padx=5)
+        rating_var = ctk.StringVar(value="All"
+        ctk.CTkOptionMenu(sf, values=["All, "G", "PG", "M", "MA15+"],
+                          variable=rating_var).pack(side="left", padx=5)
+
+        results = ctk.CTkScrollableFrame(tab)
+        results.pack(fill="both", expand=True, padx=10, pady=10)
+        
+        def apply()
+            """Re renders the result every time that the filters are applied"""
+            for w in results.winfo_children():
+                w.destroy()
+            g, r = genre_var.get(), rating_var.get()
+            for item in self.LIBRARY:
+                #kids profile is blocked from m and ma15 content
+                if self.current_profile.age_group == "Kids" and item.rating in ("M", "MA15+"):
+                    continue
+                if g != "All" and item.genre != g:
+                    continue
+                #compare ranks so pg excludes m and ma15
+                if r != "All" and self.RATINGS.get(item.rating, 5) > self.RATINGS.get(r, 5):
+                    continue
+                self._content_row(results, item)
+        
+        ctk.CTkButton(sf, text="Apply Filters", command=apply).pack(side="left", padx = 15)
+        apply() #show all content by default
+
     #play
-    
-    
+    def _play(self, item):
+        """feature 4: triggers play(), then put watch history to csv"""
+        #play() is overridden per content subtype and builds up to watch history
+        messagebox.showinfo(f"Now Playing: {item.title}", item.play(self.current_profile))
+        save_accounts(self.accounts)
+
     #watchlist
     
     
