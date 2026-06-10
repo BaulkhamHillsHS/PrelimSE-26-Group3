@@ -282,8 +282,21 @@ class OrzFlixApp(ctk.CTk):
             if item:
                 self._content_row(box, item)
                 
-    
     #account
+    def _render_account(self):
+        """feature 6: the subscription managment feature 7: viewing report export"""
+        tab = self.tabs.tab("Manage Account")
+        for w in tab.winfo_children():
+            w.destroy()
+        acc = self.current_account
+
+        #account info display
+        info = ctk.CTkFrame(tab)
+        info.pack(fill="x", padx=15, pady=15)
+        ctk.CTkLabel(info, text="Account Settings",
+                     font=("Helvetica", 16, "bold")).grid(row=0, column=0, sticky="w", padx=10, pady=10)
+        for i, text in enumerate([f"Account Holder: {acc}"])
+
     
     
     
