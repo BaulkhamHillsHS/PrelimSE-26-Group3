@@ -252,7 +252,36 @@ class OrzFlixApp(ctk.CTk):
         save_accounts(self.accounts)
 
     #watchlist
-    
+    def _toggle_watchlist(self, item, action):
+        """Feature 5: adds or removes title from the current profile's watchlist"""
+        wl = self.current_profile.Watchlist
+        if action == "add" and item.title not in wl:
+            wl.append(item.title)
+        elif action == "remove" and item.title in wl:
+            wl.remove(item.title)
+        save_accounts(self.accounts)
+        #re render tabs so watchlist button state is in sync
+        self._render_browse()
+        self._render_watchlist()
+
+    def _render_watchlist(self):
+        """displays the saved watchlist"""
+        tab = self.tabs.tab("My Watchlist")
+        for w in tab.winfo_children():
+            w.destroy()
+        ctk.CTkLabel(tab, text="Your Watchlist", font=("Helvetica", 16, "bold")).pack(pady=10)
+        if not self.current_profile.watchlist:
+            ctk.CTkLabel(tab, text="Nothing saved yet. Browse the library to add some!").pack(pady=20)
+            return
+
+        box = ctk.CTkScrollableFrame(tab)
+        box.pack(fill="both", expand=True, padx=10, pady=10)
+        for title in self.current_profile.watchlist:
+            #looks up the full content object by title so that it can reuse _content_row
+            item = next((c for c in self.LIBRARY if c.title == title), None)
+            if item:
+                self._content_row(box, item)
+                
     
     #account
     
