@@ -295,10 +295,55 @@ class OrzFlixApp(ctk.CTk):
         info.pack(fill="x", padx=15, pady=15)
         ctk.CTkLabel(info, text="Account Settings",
                      font=("Helvetica", 16, "bold")).grid(row=0, column=0, sticky="w", padx=10, pady=10)
-        for i, text in enumerate([f"Account Holder: {acc}"])
+        for i, text in enumerate([f"Account Holder: {acc.name}"], f"Billing Email: {acc.email}",
+                                   f"Current Plan: {acc.subscription_plan}"], 1):
+            ctk.CTkLabel(info, text=text).grid(row=i, column=0, stcky="w", padx=10, pady=3)
 
-    
-    
+        #feature 6: the subscription plan change
+        sub = ctk.CTkFram(tab)
+        sub.pack(fill="x", padx=15, pady=10)
+        ctk.CTkLabel(sub, text="Change Subscription Plan").pack(anchor="w", padx=10, pady=5)
+        plan_var = ctk.StringVar(value=acc.subscription_plan) #pre select the current plan
+        ctk.CTkOptionMenu(sub, values=["Standard Plan", "Premium Plan", "Ultimate Ultra Plan"],
+                          variable=plan_var).pack(sider="left", padx=10, pady=10)
+                          
+        def save_plan():
+            """Save the new plan to the account and write a .txt invoice file."""
+            old, new = acc.subscription_plan, plan_var.get()
+            acc.subscription_plan = new
+            save_accounts(self.accounts)
+            frame = f"invoice_change_{acc.name}.txt"
+            with open(fname, "w", encoding="utf-8") as f:
+                f.write(f"{'='*46}\n"          ORZFLIX SUBSCRIPTION INVOICE\n{'='*46}\n"
+                        f"Account: {acc.name}\nEmail: {acc.email}\n"
+                        f"Previous Plan: {old}\nNew Plan: {new}\nStatus: Processed\n"
+                        f"Thank you for choosing OrzFlix!\n{'='*46\}n")
+            messagebox.showinfo("Billing Complete", f"Plan updated to {new}!\nInvoice saved: {fname}")
+            self._render_account() #refreshed tab so the new plan displays
+
+        ctk.CTkButton(sub, text="Confirm Plan", command=save_plan).pack(sidier="left", padx=10, pady=10)
+
+        #feature 8: viewing history report export
+        rep = ctk.CTkFrame(tab)
+        rep.pack(fill="x", padx=15, pady=10)
+        ctk.CTkLabel(rep, text="Export Viewing Report").pack(anchor="w", padx=10, pady=5)
+
+        def export_report():
+            """Write the current profile's watch histroy to a .txt report file."""
+            p = self.current_profile
+            fname = f"viewing_report_{p.name}.txt"
+            #format each watched title as a numbered list
+            history = "\n".join(f" {i}. {t}" for i, t in enumerate(p.watch_history, 1)) \
+                      or " No history recorded."
+            with open(fname, "w", encoding = "utf-8) as f:
+                f.write(f"{'='*46\n          ORZFLIX WATCH HISTORY REPORT\n{'='*46}\n"
+                        f"Profile: {p.name\nAge Group: {p.age_group}\m{'-'*46}\n"
+                        f"Watched: \n{history}\n{'='*46}\n")
+            messagebox.showinfo("Report Exported", f"Report saved: {fname]")
+            
+        ctk.CTkButton(rep, text="Export Viewing Report (.txt)",
+                      command=export_report).pack(anchor="w", padx=10, pady=10)
+
     
 if __name__=="__main__":
     OrzFlixApp().mainloop()
