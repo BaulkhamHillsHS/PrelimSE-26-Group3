@@ -1,7 +1,10 @@
 import os,csv,json,sys
 from tkinter import messagebox
-import customkinter as ctk
-from PIL import image
+import customtkinter as ctk
+from PIL import Image
+
+ctk.set_appearance_mode("Dark")
+ctk.set_default_color_theme("blue")
 
 # creating all the class
 class Content:
@@ -25,7 +28,7 @@ class Movie(Content):
     def play(self,profile):
         if self.title not in profile.watch_history:
             profile.watch_history.append(self.title)
-        return f"Streaming Movie: {self.tite} ({self.duration})\nEnjoy ur movie!"
+        return f"Streaming Movie: {self.title} ({self.duration})\nEnjoy ur movie!"
     
 class Account:
     #bruh composition and encapsultion
@@ -40,7 +43,7 @@ class Account:
 
 CSV_FILE="accounts.csv"
 def load_accounts():
-    if not os.pasth.exists(CSV_FILE):
+    if not os.path.exists(CSV_FILE):
         messagebox.showerror("Critical Error", f"Cannot find '{CSV_FILE}'.") #customkinkter
         sys.exit()
     accounts={} #storing all the accounts in a map
@@ -68,11 +71,11 @@ class OrzFlixApp(ctk.CTk):
     
     #static library shared accross all profiles
     LIBRARY=[
-        Movie("THE Avengers","Action","PG","averger.jpg","2h 23m"),
-        Movie("Farewell my Concubine","Drama","MA15+","farewell.jpg","2h 51m"),
-        Movie("Jaws","Thriller","M","jaw.webp","2h 4m"),
+        Movie("The Avengers","Action","PG","avergers.jpg","2h 23m"),
+        Movie("Farewell My Concubine","Drama","MA15+","farewell.jpg","2h 51m"),
+        Movie("Jaws","Thriller","M","jaws.webp","2h 4m"),
         Movie("The Sun Also Rises","Drama","MA15+","sun_rises.jpg","2h 10m"),
-        Movie("Your Name","Animation","PG","your_name.jpg","1 46m"),
+        Movie("Your Name","Animation","PG","your_name.jpg","1h 46m"),
     ]
     
     #initialization
@@ -84,27 +87,27 @@ class OrzFlixApp(ctk.CTk):
         #hide the window while loading any startup
         self.withdraw()
         self.accounts=load_accounts()
-        self.current_accounts=self.current_profile=None
+        self.current_account=self.current_profile=None
         
         #reveal the window once data is safely load
         self.deiconify()
         
         #single root container, i want all the screens rendered in this frame
-        self.container=ctk.CTk.Frame(self)
+        self.container=ctk.CTkFrame(self)
         self.container.pack(fill="both",expand=True)
         self.show_login_screen()
     
     def clear(self):
         #destory all widge in the container, ready for the next screen
         for w in self.container.winfo_children():
-            w.destory()
+            w.destroy()
     
     #login screen
     def show_login_screen(self):
         #first feature, entry point show the login form
         self.clear()
-        self.current_accounts=self.current_profile=None
-        ctk.CTkLabel(self.container,text="Welcome to OrzFliz", font=("Helvetica",28,"bold")).pack(pady=40)
+        self.current_account=self.current_profile=None
+        ctk.CTkLabel(self.container,text="Welcome to OrzFlix", font=("Helvetica",28,"bold")).pack(pady=40)
         
         frame=ctk.CTkFrame(self.container)
         frame.pack(pady=20,padx=50)
@@ -118,7 +121,7 @@ class OrzFlixApp(ctk.CTk):
         def login():
             e=email.get().strip()
             #check_password is a private attribute
-            if e in self.account and self.account[e].check_password(pw.get()):
+            if e in self.accounts and self.accounts[e].check_password(pw.get()):
                 self.current_account=self.accounts[e]
                 self.show_profile_selection()
             else:
@@ -155,7 +158,7 @@ class OrzFlixApp(ctk.CTk):
         nav=ctk.CTkFrame(self.container,height=50,fg_color="#1f2326")
         nav.pack(fill="x")
         ctk.CTkLabel(nav,text=" OrzFlix",font=("Helvetica",18,"bold"),text_color="#3b8ed0").pack(side="left",padx=20,pady=10)
-        ctk.CTkLabel(nav,text=f"Active:{self.current_profile.name}",font=("Helvetica,12")),pack(side="left",padx=20)
+        ctk.CTkLabel(nav,text=f"Active:{self.current_profile.name}",font=("Helvetica",12)).pack(side="left",padx=20)
         ctk.CTkButton(nav,text="Switch Profile",width=100,command=self.show_profile_selection).pack(side="right",padx=10,pady=10)
         
         #tab view housing all three main features
@@ -182,12 +185,12 @@ class OrzFlixApp(ctk.CTk):
                 img = ctk.CTkImage(Image.open(img_path), size=(60, 90))
                 ctk.CTkLabel(row, image=img, text="").pack(side="left", padx=10, pady=5)
             except Exception:
-                ctl.CTkLabel(row, text="[IMG ERROR]", width=60).pack(side="left", padx=10)
+                ctk.CTkLabel(row, text="[IMG ERROR]", width=60).pack(side="left", padx=10)
         else:
             ctk.CTkLabel(row, text="[No Poster]", width=60).pack(side="left", padx=10)
 
         #title, rating, genre, and duration of text block
-        ctk.CtkLabel(row, justify="left, font=("Helvetica", 14, "bold),
+        ctk.CTkLabel(row, justify="left", font=("Helvetica", 14, "bold"),
                      text=f"{item.title} [{item.rating}] - {item.genre}\n(Movie - {item.duration})"
                      ).pack(side="left", padx=10)
 
@@ -198,7 +201,7 @@ class OrzFlixApp(ctk.CTk):
         #watchlist button:  label, colour and action flip based on current state
         in_wl = item.title in self.current_profile.watchlist
         action = "remove" if in_wl else "add"
-        kw = {"fg_colour": "grey"} if in_wl else {} #only override colour when already saved
+        kw = {"fg_color": "gray"} if in_wl else {} #only override colour when already saved
         ctk.CTkButton(row, text="Remove Watchlist" if in_wl else "+ Watchlist", width=120,
                       command=lambda c=item, a=action: self._toggle_watchlist(c, a),
                       **kw).pack(side="right", padx=5)
@@ -218,14 +221,14 @@ class OrzFlixApp(ctk.CTk):
         ctk.CTkOptionMenu(sf, values=["All", "Action", "Drama", "Thriller", "Animation"],
                           variable=genre_var).pack(side="left", padx=5)
         ctk.CTkLabel(sf, text="Max Rating: ").pack(side="left", padx=5)
-        rating_var = ctk.StringVar(value="All"
-        ctk.CTkOptionMenu(sf, values=["All, "G", "PG", "M", "MA15+"],
+        rating_var = ctk.StringVar(value="All")
+        ctk.CTkOptionMenu(sf, values=["All", "G", "PG", "M", "MA15+"],
                           variable=rating_var).pack(side="left", padx=5)
 
         results = ctk.CTkScrollableFrame(tab)
         results.pack(fill="both", expand=True, padx=10, pady=10)
         
-        def apply()
+        def apply():
             """Re renders the result every time that the filters are applied"""
             for w in results.winfo_children():
                 w.destroy()
@@ -254,7 +257,7 @@ class OrzFlixApp(ctk.CTk):
     #watchlist
     def _toggle_watchlist(self, item, action):
         """Feature 5: adds or removes title from the current profile's watchlist"""
-        wl = self.current_profile.Watchlist
+        wl = self.current_profile.watchlist
         if action == "add" and item.title not in wl:
             wl.append(item.title)
         elif action == "remove" and item.title in wl:
@@ -295,33 +298,33 @@ class OrzFlixApp(ctk.CTk):
         info.pack(fill="x", padx=15, pady=15)
         ctk.CTkLabel(info, text="Account Settings",
                      font=("Helvetica", 16, "bold")).grid(row=0, column=0, sticky="w", padx=10, pady=10)
-        for i, text in enumerate([f"Account Holder: {acc.name}"], f"Billing Email: {acc.email}",
+        for i, text in enumerate([f"Account Holder: {acc.name}", f"Billing Email: {acc.email}",
                                    f"Current Plan: {acc.subscription_plan}"], 1):
-            ctk.CTkLabel(info, text=text).grid(row=i, column=0, stcky="w", padx=10, pady=3)
+            ctk.CTkLabel(info, text=text).grid(row=i, column=0, sticky="w", padx=10, pady=3)
 
         #feature 6: the subscription plan change
-        sub = ctk.CTkFram(tab)
+        sub = ctk.CTkFrame(tab)
         sub.pack(fill="x", padx=15, pady=10)
         ctk.CTkLabel(sub, text="Change Subscription Plan").pack(anchor="w", padx=10, pady=5)
         plan_var = ctk.StringVar(value=acc.subscription_plan) #pre select the current plan
         ctk.CTkOptionMenu(sub, values=["Standard Plan", "Premium Plan", "Ultimate Ultra Plan"],
-                          variable=plan_var).pack(sider="left", padx=10, pady=10)
+                          variable=plan_var).pack(side="left", padx=10, pady=10)
                           
         def save_plan():
             """Save the new plan to the account and write a .txt invoice file."""
             old, new = acc.subscription_plan, plan_var.get()
             acc.subscription_plan = new
             save_accounts(self.accounts)
-            frame = f"invoice_change_{acc.name}.txt"
+            fname = f"invoice_change_{acc.name}.txt"
             with open(fname, "w", encoding="utf-8") as f:
-                f.write(f"{'='*46}\n"          ORZFLIX SUBSCRIPTION INVOICE\n{'='*46}\n"
+                f.write(f"{'='*46}\n          ORZFLIX SUBSCRIPTION INVOICE\n{'='*46}\n"
                         f"Account: {acc.name}\nEmail: {acc.email}\n"
                         f"Previous Plan: {old}\nNew Plan: {new}\nStatus: Processed\n"
-                        f"Thank you for choosing OrzFlix!\n{'='*46\}n")
+                        f"Thank you for choosing OrzFlix!\n{'='*46}\n")
             messagebox.showinfo("Billing Complete", f"Plan updated to {new}!\nInvoice saved: {fname}")
             self._render_account() #refreshed tab so the new plan displays
 
-        ctk.CTkButton(sub, text="Confirm Plan", command=save_plan).pack(sidier="left", padx=10, pady=10)
+        ctk.CTkButton(sub, text="Confirm Plan", command=save_plan).pack(side="left", padx=10, pady=10)
 
         #feature 8: viewing history report export
         rep = ctk.CTkFrame(tab)
@@ -335,11 +338,11 @@ class OrzFlixApp(ctk.CTk):
             #format each watched title as a numbered list
             history = "\n".join(f" {i}. {t}" for i, t in enumerate(p.watch_history, 1)) \
                       or " No history recorded."
-            with open(fname, "w", encoding = "utf-8) as f:
-                f.write(f"{'='*46\n          ORZFLIX WATCH HISTORY REPORT\n{'='*46}\n"
-                        f"Profile: {p.name\nAge Group: {p.age_group}\m{'-'*46}\n"
+            with open(fname, "w", encoding = "utf-8") as f:
+                f.write(f"{'='*46}\n          ORZFLIX WATCH HISTORY REPORT\n{'='*46}\n"
+                        f"Profile: {p.name}\nAge Group: {p.age_group}\n{'-'*46}\n"
                         f"Watched: \n{history}\n{'='*46}\n")
-            messagebox.showinfo("Report Exported", f"Report saved: {fname]")
+            messagebox.showinfo("Report Exported", f"Report saved: {fname}")
             
         ctk.CTkButton(rep, text="Export Viewing Report (.txt)",
                       command=export_report).pack(anchor="w", padx=10, pady=10)
