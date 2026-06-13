@@ -71,7 +71,7 @@ class OrzFlixApp(ctk.CTk):
     
     #static library shared accross all profiles
     LIBRARY=[
-        Movie("The Avengers","Action","PG","avergers.jpg","2h 23m"),
+        Movie("The Avengers","Action","PG","avengers.jpg","2h 23m"),
         Movie("Farewell My Concubine","Drama","MA15+","farewell.jpg","2h 51m"),
         Movie("Jaws","Thriller","M","jaws.webp","2h 4m"),
         Movie("The Sun Also Rises","Drama","MA15+","sun_rises.jpg","2h 10m"),
@@ -312,6 +312,10 @@ class OrzFlixApp(ctk.CTk):
                           
         def save_plan():
             """Save the new plan to the account and write a .txt invoice file."""
+            dialog=ctk.CTkInputDialog(text="Enter Your Password to confirm change plan:",title="Confirm Password")
+            entered=dialog.get_input()
+            if not acc.check_password(entered):
+                messagebox.showerror("Authentication Failed","Inocrrect Password")
             old, new = acc.subscription_plan, plan_var.get()
             acc.subscription_plan = new
             save_accounts(self.accounts)
