@@ -67,15 +67,77 @@ def save_accounts(accounts):
 
 class OrzFlixApp(ctk.CTk):
     #numeric rank for each rating so we can compare them 
-    RATINGS={"G":1,"PG":2,"M":3,"MA15+":4}
-    
-    #static library shared accross all profiles
-    LIBRARY=[
-        Movie("The Avengers","Action","PG","avengers.jpg","2h 23m"),
-        Movie("Farewell My Concubine","Drama","MA15+","farewell.jpg","2h 51m"),
-        Movie("Jaws","Thriller","M","jaws.webp","2h 4m"),
-        Movie("The Sun Also Rises","Drama","MA15+","sun_rises.jpg","2h 10m"),
-        Movie("Your Name","Animation","PG","your_name.jpg","1h 46m"),
+    RATINGS = {"G": 1, "PG": 2, "M": 3, "MA15+": 4}
+ 
+    # Static library shared across all profiles
+    LIBRARY = [
+    # ── Original 5 ───────────────────────────────────────────────────────────
+        Movie("The Avengers",         "Action",    "PG",    "avengers.jpg",          "2h 23m"),
+        Movie("Farewell My Concubine","Drama",     "MA15+", "farewell.jpg",          "2h 51m"),
+        Movie("Jaws",                 "Thriller",  "M",     "jaws.webp",             "2h 4m"),
+        Movie("The Sun Also Rises",   "Drama",     "MA15+", "sun_rises.jpg",         "2h 10m"),
+        Movie("Your Name",            "Animation", "PG",    "your_name.jpg",         "1h 46m"),
+ 
+    # ── Action (8) ───────────────────────────────────────────────────────────
+        Movie("Spider-Man: No Way Home",        "Action", "PG",    "spiderman_no_way_home.jpg",      "2h 28m"),
+        Movie("Black Panther",                  "Action", "M",     "black_panther.jpg",              "2h 14m"),
+        Movie("Wonder Woman",                   "Action", "M",     "wonder_woman.jpg",               "2h 21m"),
+        Movie("Mission: Impossible - Fallout",  "Action", "M",     "mission_impossible_fallout.jpg", "2h 27m"),
+        Movie("Mad Max: Fury Road",             "Action", "MA15+", "mad_max_fury_road.jpg",          "2h 0m"),
+        Movie("John Wick",                      "Action", "MA15+", "john_wick.jpg",                  "1h 41m"),
+        Movie("Guardians of the Galaxy",        "Action", "PG",    "guardians_of_the_galaxy.jpg",    "2h 1m"),
+        Movie("The Dark Knight",                "Action", "M",     "the_dark_knight.jpg",            "2h 32m"),
+ 
+        # ── Animation (7) ────────────────────────────────────────────────────────
+        Movie("Spirited Away",   "Animation", "G",  "spirited_away.jpg", "2h 4m"),
+        Movie("The Lion King",   "Animation", "G",  "the_lion_king.jpg", "1h 28m"),
+        Movie("Finding Nemo",    "Animation", "G",  "finding_nemo.jpg",  "1h 40m"),
+        Movie("Coco",            "Animation", "PG", "coco.jpg",          "1h 45m"),
+        Movie("Toy Story",       "Animation", "G",  "toy_story.jpg",     "1h 21m"),
+        Movie("Moana",           "Animation", "PG", "moana.jpg",         "1h 47m"),
+        Movie("WALL-E",          "Animation", "G",  "wall_e.jpg",        "1h 38m"),
+ 
+        # ── Drama (6) ────────────────────────────────────────────────────────────
+        Movie("The Shawshank Redemption", "Drama", "MA15+", "shawshank_redemption.jpg", "2h 22m"),
+        Movie("Forrest Gump",             "Drama", "M",     "forrest_gump.jpg",         "2h 22m"),
+        Movie("The Godfather",            "Drama", "MA15+", "the_godfather.jpg",        "2h 55m"),
+        Movie("Schindler's List",         "Drama", "MA15+", "schindlers_list.jpg",      "3h 15m"),
+        Movie("Parasite",                 "Drama", "MA15+", "parasite.jpg",             "2h 12m"),
+        Movie("A Beautiful Mind",         "Drama", "M",     "a_beautiful_mind.jpg",     "2h 15m"),
+ 
+        # ── Comedy (4) ───────────────────────────────────────────────────────────
+        Movie("The Grand Budapest Hotel", "Comedy", "M",     "grand_budapest_hotel.jpg", "1h 39m"),
+        Movie("Groundhog Day",            "Comedy", "PG",    "groundhog_day.jpg",        "1h 41m"),
+        Movie("Knives Out",               "Comedy", "M",     "knives_out.jpg",           "2h 10m"),
+        Movie("Superbad",                 "Comedy", "MA15+", "superbad.jpg",             "1h 53m"),
+ 
+        # ── Thriller (5) ─────────────────────────────────────────────────────────
+        Movie("Inception",              "Thriller", "M",     "inception.jpg",              "2h 28m"),
+        Movie("Gone Girl",              "Thriller", "MA15+", "gone_girl.jpg",              "2h 29m"),
+        Movie("Shutter Island",         "Thriller", "M",     "shutter_island.jpg",         "2h 18m"),
+        Movie("Se7en",                  "Thriller", "MA15+", "se7en.jpg",                  "2h 7m"),
+        Movie("The Silence of the Lambs","Thriller","MA15+", "silence_of_the_lambs.jpg",   "1h 58m"),
+ 
+        # ── Horror (5) ───────────────────────────────────────────────────────────
+        Movie("Get Out",       "Horror", "MA15+", "get_out.jpg",      "1h 44m"),
+        Movie("A Quiet Place", "Horror", "M",     "a_quiet_place.jpg","1h 30m"),
+        Movie("Hereditary",    "Horror", "MA15+", "hereditary.jpg",   "2h 7m"),
+        Movie("The Conjuring", "Horror", "MA15+", "the_conjuring.jpg","1h 52m"),
+        Movie("It",            "Horror", "MA15+", "it.jpg",           "2h 15m"),
+ 
+        # ── Sci-Fi (6) ───────────────────────────────────────────────────────────
+        Movie("Interstellar",    "Sci-Fi", "M",     "interstellar.jpg",    "2h 49m"),
+        Movie("The Martian",     "Sci-Fi", "M",     "the_martian.jpg",     "2h 24m"),
+        Movie("Arrival",         "Sci-Fi", "M",     "arrival.jpg",         "1h 56m"),
+        Movie("Ex Machina",      "Sci-Fi", "MA15+", "ex_machina.jpg",      "1h 48m"),
+        Movie("Blade Runner 2049","Sci-Fi","MA15+", "blade_runner_2049.jpg","2h 44m"),
+        Movie("Dune",            "Sci-Fi", "M",     "dune.jpg",            "2h 35m"),
+ 
+        # ── Romance (4) ──────────────────────────────────────────────────────────
+        Movie("Titanic",            "Romance", "M",  "titanic.jpg",           "3h 14m"),
+        Movie("La La Land",         "Romance", "PG", "la_la_land.jpg",        "2h 8m"),
+        Movie("The Notebook",       "Romance", "M",  "the_notebook.jpg",      "2h 3m"),
+        Movie("Pride and Prejudice","Romance", "PG", "pride_and_prejudice.jpg","1h 49m"),
     ]
     
     #initialization
