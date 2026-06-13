@@ -1,2 +1,2 @@
 name,email,password,subscription_plan,payment_info,profiles
-MrDunne,ryan.dunne9@det.nsw.edu.au,Baulko11!!,Premium Plan,Visa **** 1234,"[{""name"": ""MrDunne"", ""age_group"": ""Adult"", ""watchlist"": [], ""watch_history"": []}, {""name"": ""Kids Zone"", ""age_group"": ""Kids"", ""watchlist"": [], ""watch_history"": []}]"
+MrDunne,ryan.dunne9@det.nsw.edu.au,Baulko11!!,Standard Plan,Visa **** 1234,"[{""name"": ""MrDunne"", ""age_group"": ""Adult"", ""watchlist"": [], ""watch_history"": []}, {""name"": ""Kids Zone"", ""age_group"": ""Kids"", ""watchlist"": [], ""watch_history"": []}]"

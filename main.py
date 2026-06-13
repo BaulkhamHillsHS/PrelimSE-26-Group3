@@ -316,6 +316,7 @@ class OrzFlixApp(ctk.CTk):
             entered=dialog.get_input()
             if not acc.check_password(entered):
                 messagebox.showerror("Authentication Failed","Inocrrect Password")
+                return
             old, new = acc.subscription_plan, plan_var.get()
             acc.subscription_plan = new
             save_accounts(self.accounts)
